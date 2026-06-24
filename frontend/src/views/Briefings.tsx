@@ -1,29 +1,160 @@
-import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { api } from "../api";
+import { Icon } from "../components/icons";
+import { Badge, Pill, fmtFecha } from "../components/ui";
+
+type Item = {
+  id: string;
+  titulo: string;
+  version_activa: number | null;
+  estado: string;
+  nivel_clasificacion: string;
+  creado_en: string | null;
+};
 
 export default function Briefings() {
-  const [items, setItems] = useState<any[]>([]);
-  useEffect(() => { api.listBriefings().then((r) => setItems(r.briefings)); }, []);
+  const nav = useNavigate();
+  const [items, setItems] = useState<Item[]>([]);
+  const [cargando, setCargando] = useState(true);
+  const [q, setQ] = useState("");
+  const [fEstado, setFEstado] = useState("");
+  const [fNivel, setFNivel] = useState("");
+
+  useEffect(() => {
+    api
+      .listBriefings()
+      .then((r) => setItems(r.briefings))
+      .finally(() => setCargando(false));
+  }, []);
+
+  const filtrados = useMemo(
+    () =>
+      items.filter(
+        (b) =>
+          (!q || b.titulo.toLowerCase().includes(q.toLowerCase())) &&
+          (!fEstado || b.estado === fEstado) &&
+          (!fNivel || b.nivel_clasificacion === fNivel)
+      ),
+    [items, q, fEstado, fNivel]
+  );
+
+  const vacio = !cargando && filtrados.length === 0;
 
   return (
-    <div className="card">
-      <h2>Briefings</h2>
-      <table>
-        <thead><tr><th>Título</th><th>Versión</th><th>Estado</th><th>Clasificación</th><th>Creado</th></tr></thead>
-        <tbody>
-          {items.map((b) => (
-            <tr key={b.id}>
-              <td><Link to={`/briefings/${b.id}`}>{b.titulo}</Link></td>
-              <td>{b.version_activa ?? "—"}</td>
-              <td>{b.estado}</td>
-              <td><span className={`badge ${b.nivel_clasificacion}`}>{b.nivel_clasificacion}</span></td>
-              <td>{b.creado_en?.slice(0, 16).replace("T", " ")}</td>
-            </tr>
-          ))}
-          {!items.length && <tr><td colSpan={5}>Aún no hay briefings.</td></tr>}
-        </tbody>
-      </table>
+    <div className="page">
+      <div className="page-head">
+        <div>
+          <div className="eyebrow">Repositorio</div>
+          <h1 className="page-title">Briefings</h1>
+          <p className="page-sub">
+            {cargando ? "Cargando…" : `${filtrados.length} documentos`} · ordenados por fecha de
+            creación
+          </p>
+        </div>
+        <Link className="btn btn--primary" to="/cargar">
+          <Icon name="plus" />
+          Nuevo briefing
+        </Link>
+      </div>
+
+      <div className="toolbar">
+        <div className="search" style={{ flex: 1, minWidth: 240, maxWidth: 380 }}>
+          <Icon name="search" />
+          <input
+            className="input"
+            placeholder="Buscar por título…"
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+          />
+        </div>
+        <select
+          className="select"
+          style={{ width: "auto" }}
+          value={fEstado}
+          onChange={(e) => setFEstado(e.target.value)}
+        >
+          <option value="">Todos los estados</option>
+          <option>BORRADOR</option>
+          <option>GENERANDO</option>
+          <option>LISTO</option>
+          <option>APROBADO</option>
+        </select>
+        <select
+          className="select"
+          style={{ width: "auto" }}
+          value={fNivel}
+          onChange={(e) => setFNivel(e.target.value)}
+        >
+          <option value="">Toda clasificación</option>
+          <option>PUBLICO</option>
+          <option>RESERVADO</option>
+          <option>SECRETO</option>
+        </select>
+      </div>
+
+      {vacio ? (
+        <div className="card">
+          <div className="empty">
+            <div className="empty__ico">
+              <Icon name="list-empty" strokeWidth={1.6} />
+            </div>
+            <div className="empty__title">
+              {items.length === 0 ? "Aún no hay briefings." : "Sin resultados para el filtro."}
+            </div>
+            <p style={{ maxWidth: "40ch", margin: "0 auto var(--sp-5)" }}>
+              Cargue documentos fuente y genere el primer briefing institucional del sector.
+            </p>
+            <Link className="btn btn--primary" to="/cargar">
+              <Icon name="upload" />
+              Cargar documentos
+            </Link>
+          </div>
+        </div>
+      ) : (
+        <div className="table-wrap">
+          <table className="table table--clickable">
+            <thead>
+              <tr>
+                <th style={{ width: "34%" }}>Título</th>
+                <th>Versión activa</th>
+                <th>Estado</th>
+                <th>Clasificación</th>
+                <th className="num">Creado</th>
+              </tr>
+            </thead>
+            <tbody>
+              {cargando && (
+                <tr>
+                  <td colSpan={5}>
+                    <div className="skel" style={{ height: 14, width: "60%" }} />
+                  </td>
+                </tr>
+              )}
+              {filtrados.map((b) => (
+                <tr key={b.id} onClick={() => nav(`/briefings/${b.id}`)}>
+                  <td>
+                    <div className="cell-strong">
+                      <Link to={`/briefings/${b.id}`} onClick={(e) => e.stopPropagation()}>
+                        {b.titulo}
+                      </Link>
+                    </div>
+                    <div className="cell-sub mono">{b.id.slice(0, 8)}</div>
+                  </td>
+                  <td className="cell-mono">{b.version_activa != null ? `v${b.version_activa}` : "—"}</td>
+                  <td>
+                    <Pill estado={b.estado} />
+                  </td>
+                  <td>
+                    <Badge nivel={b.nivel_clasificacion} />
+                  </td>
+                  <td className="num cell-sub">{fmtFecha(b.creado_en)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }

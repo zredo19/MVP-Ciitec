@@ -1,29 +1,115 @@
-import { Link, Navigate, Route, Routes, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { NavLink, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { useAuth } from "./auth";
+import { useTheme } from "./theme";
+import { Icon } from "./components/icons";
+import { iniciales, ribbonLeyenda } from "./components/ui";
 import Login from "./views/Login";
 import Cargar from "./views/Cargar";
 import Briefings from "./views/Briefings";
 import Briefing from "./views/Briefing";
 import Auditoria from "./views/Auditoria";
 
+const ROLES_AUDITORIA = ["Auditor", "Oficial de Seguridad", "Administrador del Sistema"];
+
+function useOnline() {
+  const [online, setOnline] = useState(typeof navigator === "undefined" ? true : navigator.onLine);
+  useEffect(() => {
+    const on = () => setOnline(true);
+    const off = () => setOnline(false);
+    window.addEventListener("online", on);
+    window.addEventListener("offline", off);
+    return () => {
+      window.removeEventListener("online", on);
+      window.removeEventListener("offline", off);
+    };
+  }, []);
+  return online;
+}
+
 function Layout({ children }: { children: React.ReactNode }) {
   const { user, logout } = useAuth();
-  const esAuditor = user?.roles.some((r) => ["Auditor", "Oficial de Seguridad", "Administrador del Sistema"].includes(r));
+  const { tema, alternar } = useTheme();
+  const online = useOnline();
+  const esAuditor = user?.roles.some((r) => ROLES_AUDITORIA.includes(r));
+  const nivel = (user?.nivel_habilitacion || "RESERVADO").toUpperCase();
+  const navCls = ({ isActive }: { isActive: boolean }) => "topnav__item" + (isActive ? " is-active" : "");
+
   return (
     <div>
+      <div className="ribbon" data-nivel={nivel}>
+        <span className="ribbon__dot" />
+        <span>{ribbonLeyenda(nivel)}</span>
+        <span className="ribbon__dot" />
+      </div>
+
       <header className="topbar">
-        <span className="brand">★ Síntesis de Briefings — CIITEC</span>
-        <nav>
-          <Link to="/cargar">Cargar</Link>
-          <Link to="/briefings">Briefings</Link>
-          {esAuditor && <Link to="/auditoria">Auditoría</Link>}
+        <div className="brand">
+          <div className="brand__mark" aria-hidden="true">
+            <Icon name="shield" />
+          </div>
+          <div>
+            <div className="brand__name">★ Síntesis de Briefings</div>
+            <div className="brand__sub">CIITEC</div>
+          </div>
+        </div>
+
+        <nav className="topnav">
+          <NavLink to="/cargar" className={navCls}>
+            <Icon name="upload" />
+            Cargar
+          </NavLink>
+          <NavLink to="/briefings" className={navCls}>
+            <Icon name="list" />
+            Briefings
+          </NavLink>
+          {esAuditor && (
+            <NavLink to="/auditoria" className={navCls}>
+              <Icon name="shield-check" />
+              Auditoría
+            </NavLink>
+          )}
         </nav>
-        <span className="user">
-          {user?.nombre} · {user?.nivel_habilitacion}{" "}
-          <button onClick={logout}>Salir</button>
-        </span>
+
+        <div className="topbar__spacer" />
+
+        <div className={"conn" + (online ? "" : " is-off")} title={online ? "Conectado" : "Sin conexión"}>
+          <span className="conn__led" />
+          <span>{online ? "EN LÍNEA" : "OFFLINE"}</span>
+        </div>
+
+        <div
+          className={"toggle" + (tema === "dark" ? " is-on" : "")}
+          role="switch"
+          aria-checked={tema === "dark"}
+          aria-label="Modo oscuro"
+          tabIndex={0}
+          title="Modo claro/oscuro"
+          onClick={alternar}
+          onKeyDown={(e) => {
+            if (e.key === " " || e.key === "Enter") {
+              e.preventDefault();
+              alternar();
+            }
+          }}
+        />
+
+        <div className="user">
+          <div className="user__id">
+            <div className="user__name">{user?.nombre}</div>
+            <div className="user__role">
+              {user?.roles?.[0] || "Usuario"} · habilitación <strong>{nivel}</strong>
+            </div>
+          </div>
+          <div className="user__av">{iniciales(user?.nombre)}</div>
+          <button className="btn btn--ghost btn--sm" onClick={logout} title="Salir">
+            <Icon name="logout" />
+            Salir
+          </button>
+        </div>
       </header>
-      <main className="container">{children}</main>
+
+      <main className="app">{children}</main>
     </div>
   );
 }
@@ -31,7 +117,7 @@ function Layout({ children }: { children: React.ReactNode }) {
 function Protected({ children }: { children: React.ReactNode }) {
   const { user, cargando } = useAuth();
   const loc = useLocation();
-  if (cargando) return <div className="container">Cargando…</div>;
+  if (cargando) return <div className="page">Cargando…</div>;
   if (!user) return <Navigate to="/login" state={{ from: loc }} replace />;
   return <Layout>{children}</Layout>;
 }
@@ -44,7 +130,7 @@ export default function App() {
       <Route path="/briefings" element={<Protected><Briefings /></Protected>} />
       <Route path="/briefings/:id" element={<Protected><Briefing /></Protected>} />
       <Route path="/auditoria" element={<Protected><Auditoria /></Protected>} />
-      <Route path="*" element={<Navigate to="/cargar" replace />} />
+      <Route path="*" element={<Navigate to="/briefings" replace />} />
     </Routes>
   );
 }

@@ -62,6 +62,7 @@ export const api = {
   listBriefings: () => request("/briefings"),
   getBriefing: (id: string) => request(`/briefings/${id}`),
   getVersiones: (id: string) => request(`/briefings/${id}/versiones`),
+  getDiff: (id: string, a: number, b: number) => request(`/briefings/${id}/diff/${a}/${b}`),
   reconstruir: (id: string, at: string) => request(`/briefings/${id}/versiones?at=${encodeURIComponent(at)}`),
   getInconsistencias: (id: string) => request(`/briefings/${id}/inconsistencias`),
   getTrazabilidad: (id: string) => request(`/briefings/${id}/trazabilidad`),
