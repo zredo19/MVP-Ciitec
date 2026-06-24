@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<style>
+  @page { size: A4; margin: 12mm; }
+  * { box-sizing: border-box; }
+  body { font-family: "DejaVu Sans", Arial, sans-serif; font-size: 10px; color: #1a1a1a; margin: 0; }
+  .page { page-break-after: always; }
+  .page:last-child { page-break-after: auto; }
+  .band { display: flex; align-items: stretch; margin-bottom: 8px; }
+  .band .tag { background: #111; color: #fff; padding: 8px 12px; font-weight: bold; font-size: 13px;
+               display: flex; flex-direction: column; justify-content: center; min-width: 120px; }
+  .band .tag small { font-weight: normal; color: #bbb; font-size: 9px; }
+  .band .title { background: #e6e6e6; flex: 1; padding: 8px 12px; font-weight: bold; font-size: 15px;
+                 display: flex; align-items: center; letter-spacing: .5px; }
+  .band .emblem { width: 42px; display:flex; align-items:center; justify-content:center; background:#e6e6e6; }
+  .sec { color: #fff; padding: 4px 10px; font-weight: bold; margin: 10px 0 4px; font-size: 11px; }
+  .sec .n { display:inline-block; background: rgba(0,0,0,.25); padding: 0 6px; margin-right: 6px; }
+  table { width: 100%; border-collapse: collapse; margin-bottom: 6px; }
+  th, td { border: 1px solid #999; padding: 3px 5px; text-align: left; font-size: 9px; }
+  th { background: #cdd5e0; text-transform: uppercase; font-size: 8px; }
+  ul { margin: 4px 0 8px 16px; padding: 0; }
+  li { margin-bottom: 2px; }
+  .row { display: flex; gap: 10px; }
+  .col { flex: 1; }
+  .chart { text-align: center; }
+  .chart img { max-width: 100%; }
+  /* paletas por área */
+  .personal .sec { background: #6f86b3; }
+  .personal .tag { background:#111; }
+  .inteligencia .sec { background: #6b6f43; }
+  .inteligencia .tag { background:#6b6f43; }
+  .operaciones .sec { background: #2c3e50; }
+  .operaciones .tag { background:#2c3e50; }
+  .logistica .sec { background: #111; }
+  .nop { background:#d11; color:#fff; font-weight:bold; text-align:center; }
+  .muted { color:#888; }
+</style>
+</head>
+<body>
+
+{# ---------- Página 1: Portada / Resumen ejecutivo ---------- #}
+<div class="page">
+  <div class="band operaciones">
+    <div class="tag">BRIEFING<small>{{ fecha }}</small></div>
+    <div class="title">{{ titulo }}</div>
+    <div class="emblem">★</div>
+  </div>
+
+  <div class="sec operaciones-sec" style="background:#2c3e50">RESUMEN EJECUTIVO</div>
+  <ul>
+    {% for b in resumen_ejecutivo %}<li>{{ b }}</li>{% else %}<li class="muted">-.-</li>{% endfor %}
+  </ul>
+
+  <div class="sec" style="background:#2c3e50">SITUACIÓN</div>
+  <p>{{ situacion.resumen or '-.-' }}</p>
+  {% if situacion.aspectos %}<ul>
+    {% for a in situacion.aspectos %}<li>{{ a }}</li>{% endfor %}
+  </ul>{% endif %}
+
+  <div class="sec" style="background:#8a7d3a">ASUNTOS CRÍTICOS</div>
+  <table>
+    <tr><th>Asunto</th><th>Impacto</th><th>Responsable</th></tr>
+    {% for a in asuntos_criticos %}
+    <tr><td>{{ a.asunto or '-.-' }}</td><td>{{ a.impacto or '-.-' }}</td><td>{{ a.responsable or '-.-' }}</td></tr>
+    {% else %}<tr><td colspan="3" class="muted">-.-</td></tr>{% endfor %}
+  </table>
+
+  <div class="sec" style="background:#2c3e50">PROYECCIÓN 24–72 H</div>
+  <p>{{ proyeccion_24_72h or '-.-' }}</p>
+</div>
+
+{# ---------- Página 2: PERSONAL ---------- #}
+<div class="page personal">
+  <div class="band">
+    <div class="tag">PERSONAL<small>{{ anio }}</small></div>
+    <div class="title">SITUACIÓN DE PERSONAL</div>
+    <div class="emblem">★</div>
+  </div>
+
+  <div class="sec"><span class="n">1</span>PARTE DE FUERZA INSTITUCIONAL</div>
+  <div class="row">
+    <div class="col chart">{% if donut_personal %}<img src="{{ donut_personal }}"/>{% endif %}</div>
+    <div class="col">
+      <table>
+        {% set pf = personal.parte_fuerza_institucional or {} %}
+        <tr><td>OF</td><td>{{ pf.OF or '-.-' }}</td><td>ESCMIL</td><td>{{ pf.ESCMIL or '-.-' }}</td></tr>
+        <tr><td>SOF</td><td>{{ pf.SOF or '-.-' }}</td><td>ESCSOF</td><td>{{ pf.ESCSOF or '-.-' }}</td></tr>
+        <tr><td>ECP</td><td>{{ pf.ECP or '-.-' }}</td><td>ESCSERV</td><td>{{ pf.ESCSERV or '-.-' }}</td></tr>
+        <tr><td>SLTP</td><td>{{ pf.SLTP or '-.-' }}</td><td>PERSONAL CIVIL</td><td>{{ pf.personal_civil or '-.-' }}</td></tr>
+        <tr><td>SLC</td><td>{{ pf.SLC or '-.-' }}</td><td>TOTAL</td><td>{{ pf.total or '-.-' }}</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="sec"><span class="n">2</span>PARTE DE FUERZA MACROZONAS</div>
+  <div class="row">
+    <div class="col">
+      <table>
+        <tr><th>Zona</th><th>Fuerza</th><th>Forman</th><th>Faltan</th></tr>
+        {% for m in personal.macrozonas or [] %}
+        <tr><td>{{ m.zona or '-.-' }}</td><td>{{ m.fuerza or '-.-' }}</td><td>{{ m.forman or '-.-' }}</td><td>{{ m.faltan or '-.-' }}</td></tr>
+        {% else %}<tr><td colspan="4" class="muted">-.-</td></tr>{% endfor %}
+      </table>
+    </div>
+    <div class="col chart">{% if bar_macrozonas %}<img src="{{ bar_macrozonas }}"/>{% endif %}</div>
+  </div>
+
+  <div class="sec"><span class="n">3</span>PARTE DE FUERZA DE CATÁSTROFE</div>
+  {% set c = personal.catastrofe or {} %}
+  <table>
+    <tr><th>Fuerza</th><th>Forman</th><th>Faltan</th></tr>
+    <tr><td>{{ c.fuerza or '-.-' }}</td><td>{{ c.forman or '-.-' }}</td><td>{{ c.faltan or '-.-' }}</td></tr>
+  </table>
+</div>
+
+{# ---------- Página 3: INTELIGENCIA ---------- #}
+<div class="page inteligencia">
+  <div class="band">
+    <div class="tag">INTELIGENCIA<small>{{ fecha }}</small></div>
+    <div class="title">SITUACIÓN DE INTELIGENCIA</div>
+    <div class="emblem">★</div>
+  </div>
+
+  <div class="sec"><span class="n">1</span>SITUACIÓN DE INCIDENTES INSTITUCIONALES</div>
+  <table>
+    <tr><th>Tipo</th><th>Descripción</th></tr>
+    {% for i in inteligencia.incidentes_institucionales or [] %}
+    <tr><td>{{ i.tipo or '-.-' }}</td><td>{{ i.descripcion or '-.-' }}</td></tr>
+    {% else %}<tr><td colspan="2" class="muted">-.-</td></tr>{% endfor %}
+  </table>
+
+  <div class="sec"><span class="n">2</span>SITUACIÓN DE INCIDENTES EN MOOTW</div>
+  <table>
+    <tr><th>Tipo</th><th>Unidad</th><th>Descripción</th></tr>
+    {% for i in inteligencia.incidentes_mootw or [] %}
+    <tr><td>{{ i.tipo or '-.-' }}</td><td>{{ i.unidad or '-.-' }}</td><td>{{ i.descripcion or '-.-' }}</td></tr>
+    {% else %}<tr><td colspan="3" class="muted">-.-</td></tr>{% endfor %}
+  </table>
+
+  <div class="sec"><span class="n">3</span>SISTEMA DE ALERTA</div>
+  <table>
+    <tr><th>Alerta</th><th>Área</th><th>Unidad asociada</th><th>Apreciación</th></tr>
+    {% for a in inteligencia.sistema_alerta or [] %}
+    <tr><td>{{ a.alerta or '-.-' }}</td><td>{{ a.area or '-.-' }}</td><td>{{ a.unidad_asociada or '-.-' }}</td><td>{{ a.apreciacion or '-.-' }}</td></tr>
+    {% else %}<tr><td colspan="4" class="muted">-.-</td></tr>{% endfor %}
+  </table>
+
+  <div class="sec"><span class="n">4</span>ANÁLISIS FACTORES METEOROLÓGICOS</div>
+  <p>{{ inteligencia.analisis_meteo or '-.-' }}</p>
+  <div class="sec"><span class="n">5</span>PROYECCIÓN METEOROLÓGICA PRÓXIMAS 48 HRS</div>
+  <p>{{ inteligencia.proyeccion_meteo_48h or '-.-' }}</p>
+</div>
+
+{# ---------- Página 4: OPERACIONES ---------- #}
+<div class="page operaciones">
+  <div class="band">
+    <div class="tag">OPERACIONES<small>{{ fecha }}</small></div>
+    <div class="title">OPERACIONES EN CURSO</div>
+    <div class="emblem">★</div>
+  </div>
+
+  <div class="sec"><span class="n">1</span>OPERACIONES MILITARES EN CURSO (CATÁSTROFES)</div>
+  <table>
+    <tr><th>Cantidad</th><th>Tipo</th><th>Unidad origen</th><th>Zona empleo</th><th>Inicio</th></tr>
+    {% for o in operaciones.ops_catastrofe or [] %}
+    <tr><td>{{ o.cantidad or '-.-' }}</td><td>{{ o.tipo or '-.-' }}</td><td>{{ o.unidad_origen or '-.-' }}</td><td>{{ o.zona_empleo or '-.-' }}</td><td>{{ o.inicio_empleo or '-.-' }}</td></tr>
+    {% else %}<tr><td colspan="5" class="muted">-.-</td></tr>{% endfor %}
+  </table>
+
+  <div class="row">
+    <div class="col">
+      <div class="sec"><span class="n">2</span>RELEVOS MACROZONA NORTE</div>
+      <table>
+        <tr><th>N.°</th><th>Fecha</th><th>JAF</th><th>Unidades</th></tr>
+        {% for r in operaciones.relevos_norte or [] %}
+        <tr><td>{{ r.n or '-.-' }}</td><td>{{ r.fecha or '-.-' }}</td><td>{{ r.jaf or '-.-' }}</td><td>{{ r.unidades or '-.-' }}</td></tr>
+        {% else %}<tr><td colspan="4" class="muted">-.-</td></tr>{% endfor %}
+      </table>
+    </div>
+    <div class="col">
+      <div class="sec"><span class="n">3</span>RELEVOS MACROZONA SUR</div>
+      <table>
+        <tr><th>N.°</th><th>Fecha</th><th>FT</th><th>Unidades</th></tr>
+        {% for r in operaciones.relevos_sur or [] %}
+        <tr><td>{{ r.n or '-.-' }}</td><td>{{ r.fecha or '-.-' }}</td><td>{{ r.ft or '-.-' }}</td><td>{{ r.unidades or '-.-' }}</td></tr>
+        {% else %}<tr><td colspan="4" class="muted">-.-</td></tr>{% endfor %}
+      </table>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col">
+      <div class="sec"><span class="n">5</span>OPS ANTÁRTICA</div>
+      <table>
+        <tr><th>BAE</th><th>Dotación estival</th><th>CPCCGU</th></tr>
+        {% for o in operaciones.ops_antartica or [] %}
+        <tr><td>{{ o.bae or '-.-' }}</td><td>{{ o.dotacion_estival or '-.-' }}</td><td>{{ o.cpccgu or '-.-' }}</td></tr>
+        {% else %}<tr><td colspan="3" class="muted">-.-</td></tr>{% endfor %}
+      </table>
+    </div>
+    <div class="col">
+      <div class="sec"><span class="n">6</span>OPS EXTRANJERO</div>
+      <table>
+        <tr><th>Operación</th><th>Efectivos</th><th>Ubicación</th><th>Repliegue</th></tr>
+        {% for o in operaciones.ops_extranjero or [] %}
+        <tr><td>{{ o.operacion or '-.-' }}</td><td>{{ o.efectivos or '-.-' }}</td><td>{{ o.ubicacion or '-.-' }}</td><td>{{ o.repliegue or '-.-' }}</td></tr>
+        {% else %}<tr><td colspan="4" class="muted">-.-</td></tr>{% endfor %}
+      </table>
+    </div>
+  </div>
+</div>
+
+{# ---------- Página 5: OPERACIONES (cont.) ---------- #}
+<div class="page operaciones">
+  <div class="band">
+    <div class="tag">OPERACIONES<small>{{ fecha }}</small></div>
+    <div class="title">OPERACIONES EN CURSO</div>
+    <div class="emblem">★</div>
+  </div>
+
+  {% set k = operaciones.unidades_terreno_kpi or {} %}
+  <table>
+    <tr><th>Unidades en terreno</th><th>Fuerza en terreno</th><th>Lugares activos</th><th>Actividad principal</th></tr>
+    <tr><td>{{ k.unidades_en_terreno or '-.-' }}</td><td>{{ k.fuerza_en_terreno or '-.-' }}</td><td>{{ k.lugares_activos or '-.-' }}</td><td>{{ k.actividad_principal or '-.-' }}</td></tr>
+  </table>
+
+  <div class="chart">{% if bar_traslados %}<img src="{{ bar_traslados }}"/>{% endif %}</div>
+
+  <div class="sec"><span class="n">7</span>UNIDADES EN TERRENO</div>
+  <table>
+    <tr><th>Actividad</th><th>Comando matriz</th><th>UR</th><th>Fechas</th><th>Ubicación</th><th>Fuerza</th></tr>
+    {% for u in operaciones.unidades_terreno or [] %}
+    <tr><td>{{ u.actividad or '-.-' }}</td><td>{{ u.comando_matriz or '-.-' }}</td><td>{{ u.ur or '-.-' }}</td><td>{{ u.fechas or '-.-' }}</td><td>{{ u.ubicacion or '-.-' }}</td><td>{{ u.fuerza or '-.-' }}</td></tr>
+    {% else %}<tr><td colspan="6" class="muted">-.-</td></tr>{% endfor %}
+  </table>
+</div>
+
+{# ---------- Página 6: LOGÍSTICA ---------- #}
+<div class="page logistica">
+  <div class="band">
+    <div class="tag">LOGÍSTICA<small>{{ fecha }}</small></div>
+    <div class="title">SITUACIÓN LOGÍSTICA</div>
+    <div class="emblem">★</div>
+  </div>
+
+  <div class="sec">GRÁFICO DE OPERACIONALIDAD</div>
+  <table>
+    <tr><th>Unidad</th><th>Total</th><th class="nop">NOP</th><th>Campaña</th><th>Combate</th><th>Administrativos</th><th>Eq. Ingenieros</th></tr>
+    {% for o in logistica.operacionalidad or [] %}
+    <tr><td>{{ o.unidad or '-.-' }}</td><td>{{ o.total or '-.-' }}</td><td class="nop">{{ o.nop or '-.-' }}</td><td>{{ o.campana or '-.-' }}</td><td>{{ o.combate or '-.-' }}</td><td>{{ o.administrativos or '-.-' }}</td><td>{{ o.eq_ingenieros or '-.-' }}</td></tr>
+    {% else %}<tr><td colspan="7" class="muted">-.-</td></tr>{% endfor %}
+  </table>
+</div>
+
+</body>
+</html>

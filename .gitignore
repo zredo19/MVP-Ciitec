@@ -1,0 +1,23 @@
+# Secrets / entorno local
+.env
+infra/nginx/certs/
+
+# Datos generados
+corpus/
+*.pdf
+*.docx
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+
+# Node / frontend
+node_modules/
+dist/
+dev-dist/
+
+# OS
+.DS_Store
+Thumbs.db

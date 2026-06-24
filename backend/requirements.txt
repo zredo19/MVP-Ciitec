@@ -1,0 +1,46 @@
+# --- Núcleo web / API ---
+fastapi
+uvicorn[standard]
+pydantic-settings
+python-multipart
+websockets
+jinja2
+
+# --- Cola asíncrona ---
+celery[redis]
+redis
+
+# --- Datos ---
+sqlalchemy
+psycopg[binary]
+pgvector
+alembic
+minio
+
+# --- IA / NLP ---
+openai              # LLM activo: GitHub Models (gpt-4o), API estilo OpenAI
+groq                # LLM legado: Groq Llama 3.3 70B
+sentence-transformers
+
+# --- Parsers de documentos (RF-001) ---
+pypdf
+python-docx
+openpyxl
+mail-parser
+extract-msg
+python-dateutil     # normalización de fechas (RF-002)
+
+# --- Seguridad (RNF-001 / RNF-002) ---
+ldap3
+python-jose[cryptography]
+passlib[bcrypt]
+cryptography
+
+# --- Exportación (RF-008) ---
+weasyprint          # PDF desde plantilla HTML institucional
+docxtpl             # Word desde plantilla institucional
+matplotlib          # gráficos (donut/barras) server-side a PNG
+
+# --- Pruebas ---
+pytest
+httpx

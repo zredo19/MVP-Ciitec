@@ -1,0 +1,59 @@
+{
+  "_comment": "Mapa de coordenadas para el modo pixel-perfect (RF-008). Cada clave es una ruta dentro de 'contenido'; top/left/width en % del tamaño de página; size en px. Calibrar visualmente con EXPORT_DEBUG_GRID=true.",
+  "page_size_mm": [179, 228],
+  "pages": {
+    "1": {
+      "personal.parte_fuerza_institucional.total": {"top": 20.5, "left": 28.5, "size": 12, "bold": true},
+      "personal.slc.clase_2006":  {"top": 13.0, "left": 92.6, "size": 9},
+      "personal.slc.clase_2007":  {"top": 17.2, "left": 92.6, "size": 9},
+      "personal.slc.total":       {"top": 21.0, "left": 92.6, "size": 9, "bold": true},
+      "operaciones.relevos_norte[0].n": {"top": 43.5, "left": 67.0, "size": 9},
+      "operaciones.relevos_sur[0].n":   {"top": 48.5, "left": 67.0, "size": 9},
+      "operaciones.guardian_soberano[0].fuerza": {"top": 62.0, "left": 75.0, "size": 8},
+      "operaciones.guardian_soberano[0].planif": {"top": 62.0, "left": 81.0, "size": 8},
+      "operaciones.guardian_soberano[0].ejecut": {"top": 62.0, "left": 91.0, "size": 8},
+      "operaciones.guardian_soberano[1].fuerza": {"top": 65.8, "left": 75.0, "size": 8},
+      "operaciones.guardian_soberano[1].planif": {"top": 65.8, "left": 81.0, "size": 8},
+      "operaciones.guardian_soberano[1].ejecut": {"top": 65.8, "left": 91.0, "size": 8},
+      "operaciones.guardian_soberano[2].fuerza": {"top": 69.2, "left": 75.0, "size": 8},
+      "operaciones.guardian_soberano[2].planif": {"top": 69.2, "left": 81.0, "size": 8},
+      "operaciones.guardian_soberano[2].ejecut": {"top": 69.2, "left": 91.0, "size": 8}
+    },
+    "2": {
+      "personal.parte_fuerza_institucional.OF":            {"top": 19.0, "left": 47, "size": 10},
+      "personal.parte_fuerza_institucional.SOF":           {"top": 23.5, "left": 47, "size": 10},
+      "personal.parte_fuerza_institucional.ECP":           {"top": 28.0, "left": 47, "size": 10},
+      "personal.parte_fuerza_institucional.SLTP":          {"top": 32.5, "left": 47, "size": 10},
+      "personal.parte_fuerza_institucional.ESCMIL":        {"top": 19.0, "left": 83, "size": 10},
+      "personal.parte_fuerza_institucional.ESCSOF":        {"top": 23.5, "left": 83, "size": 10},
+      "personal.parte_fuerza_institucional.ESCSERV":       {"top": 28.0, "left": 83, "size": 10},
+      "personal.parte_fuerza_institucional.personal_civil":{"top": 32.5, "left": 83, "size": 10},
+      "personal.parte_fuerza_institucional.SLC":           {"top": 37.0, "left": 83, "size": 10},
+      "personal.macrozonas[0].fuerza":  {"top": 64.0, "left": 10, "size": 9},
+      "personal.macrozonas[0].forman":  {"top": 64.0, "left": 21, "size": 9},
+      "personal.macrozonas[0].faltan":  {"top": 64.0, "left": 31, "size": 9},
+      "personal.catastrofe.fuerza":     {"top": 90.0, "left": 10, "size": 9},
+      "personal.catastrofe.forman":     {"top": 90.0, "left": 21, "size": 9},
+      "personal.catastrofe.faltan":     {"top": 90.0, "left": 31, "size": 9}
+    },
+    "3": {
+      "inteligencia.incidentes_institucionales[0].tipo":        {"top": 22.0, "left": 8,  "width": 22, "size": 8},
+      "inteligencia.incidentes_institucionales[0].descripcion": {"top": 22.0, "left": 33, "width": 60, "size": 8},
+      "inteligencia.incidentes_mootw[0].tipo":                  {"top": 56.0, "left": 8,  "width": 14, "size": 8},
+      "inteligencia.incidentes_mootw[0].unidad":                {"top": 56.0, "left": 24, "width": 16, "size": 8},
+      "inteligencia.incidentes_mootw[0].descripcion":           {"top": 56.0, "left": 42, "width": 52, "size": 8},
+      "inteligencia.analisis_meteo":        {"top": 80.0, "left": 8, "width": 86, "size": 9},
+      "inteligencia.proyeccion_meteo_48h":  {"top": 90.5, "left": 8, "width": 86, "size": 8}
+    },
+    "5": {
+      "operaciones.unidades_terreno_kpi.fuerza_en_terreno":  {"top": 15.5, "left": 25, "size": 18, "bold": true},
+      "operaciones.unidades_terreno_kpi.unidades_en_terreno":{"top": 16.0, "left": 8,  "size": 16, "bold": true},
+      "operaciones.unidades_terreno_kpi.lugares_activos":    {"top": 28.0, "left": 8,  "size": 16, "bold": true},
+      "operaciones.unidades_terreno_kpi.actividad_principal":{"top": 28.0, "left": 33, "width": 28, "size": 9}
+    },
+    "6": {
+      "logistica.resumen.total": {"top": 29.0, "left": 7.5,  "size": 14, "bold": true},
+      "logistica.resumen.nop":   {"top": 29.0, "left": 22.0, "size": 14, "bold": true}
+    }
+  }
+}
