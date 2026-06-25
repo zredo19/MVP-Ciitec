@@ -59,9 +59,11 @@ class Settings(BaseSettings):
     dedup_threshold: float = 0.85
     desactualizado_dias: int = 7
 
-    # Exportación (RF-008): "overlay" = plantilla institucional pixel-perfect
-    # (PNG de fondo + datos sobrepuestos); "flow" = reconstrucción HTML.
-    export_style: str = "overlay"
+    # Exportación (RF-008): "flow" = reconstrucción HTML fiel (tablas y gráficos
+    # generados desde los datos; sin coordenadas fijas); "overlay" = legado
+    # pixel-perfect (PNG de fondo + datos sobrepuestos), propenso a desalineación
+    # y a chocar con el contenido de muestra horneado en el PNG.
+    export_style: str = "flow"
     export_debug_grid: bool = False
 
 

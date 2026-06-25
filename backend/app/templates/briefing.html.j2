@@ -245,7 +245,13 @@
     <div class="emblem">★</div>
   </div>
 
-  <div class="sec">GRÁFICO DE OPERACIONALIDAD</div>
+  <div class="sec">OPERACIONALIDAD DEL MATERIAL</div>
+  {% set lr = logistica.resumen or {} %}
+  <table style="width:auto; margin-bottom:8px;">
+    <tr><th>Total</th><th class="nop">NOP</th></tr>
+    <tr><td style="font-weight:bold; font-size:12px; text-align:center;">{{ lr.total or '-.-' }}</td>
+        <td class="nop" style="font-size:12px;">{{ lr.nop or '-.-' }}</td></tr>
+  </table>
   <table>
     <tr><th>Unidad</th><th>Total</th><th class="nop">NOP</th><th>Campaña</th><th>Combate</th><th>Administrativos</th><th>Eq. Ingenieros</th></tr>
     {% for o in logistica.operacionalidad or [] %}

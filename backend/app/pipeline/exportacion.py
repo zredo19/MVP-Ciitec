@@ -45,6 +45,13 @@ def _num(v: Any) -> float | None:
         return None
 
 
+def _miles(v: float | None) -> str:
+    """Formatea 43720 -> '43.720' (separador de miles institucional)."""
+    if v is None:
+        return "-.-"
+    return f"{int(round(v)):,}".replace(",", ".")
+
+
 def _png_data_uri(fig) -> str:
     buf = io.BytesIO()
     fig.savefig(buf, format="png", dpi=110, bbox_inches="tight", transparent=True)
@@ -61,6 +68,10 @@ def _donut_personal(personal: dict) -> str | None:
     fig, ax = plt.subplots(figsize=(2.6, 2.6))
     ax.pie(list(datos.values()), labels=list(datos.keys()), wedgeprops={"width": 0.42},
            colors=[_AZUL, _AZUL2, "#9fb0cc", "#c9d3e3"], textprops={"fontsize": 8})
+    # Total al centro del donut (RF-008): la cifra institucional total de la fuerza.
+    total = _num(pf.get("total")) or sum(datos.values())
+    ax.text(0, 0, _miles(total), ha="center", va="center", fontsize=13, fontweight="bold", color=_AZUL)
+    ax.text(0, -0.22, "TOTAL", ha="center", va="center", fontsize=7, color="#666")
     ax.set(aspect="equal")
     return _png_data_uri(fig)
 
@@ -72,9 +83,13 @@ def _bar_macrozonas(personal: dict) -> str | None:
     if not pares:
         return None
     fig, ax = plt.subplots(figsize=(3.4, 2.4))
-    ax.barh([z for z, _ in pares], [v for _, v in pares], color=_AZUL)
+    valores = [v for _, v in pares]
+    barras = ax.barh([z for z, _ in pares], valores, color=_AZUL)
     ax.invert_yaxis()
     ax.tick_params(labelsize=7)
+    # Eje ajustado al rango real (evita que las barras grandes se salgan, problema F).
+    ax.set_xlim(0, max(valores) * 1.18)
+    ax.bar_label(barras, labels=[_miles(v) for v in valores], fontsize=7, padding=2)
     return _png_data_uri(fig)
 
 
